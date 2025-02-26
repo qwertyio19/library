@@ -32,3 +32,20 @@ class TodoViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+    def destroy(self, request, pk=None):  # Удаление по ID
+        try:
+            todo = Todo.objects.get(id=pk, user=request.user)
+            todo.delete()
+            return Response({"message": "Задача удалена"}, status=status.HTTP_204_NO_CONTENT)
+        except Todo.DoesNotExist:
+            return Response({"error": "Задача не найдена"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class DeleteAllTodosViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def destroy(self, request):
+        Todo.objects.filter(user=request.user).delete()
+        return Response({"message": "Все задачи удалены"})
