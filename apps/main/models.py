@@ -1,25 +1,23 @@
 from ckeditor.fields import RichTextField
 from django.db import models
+import re
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
 
 
+class User(AbstractUser):
 
-class User(models.Model):
-    username = models.CharField(
-        max_length=255,
-        unique=True,
-        verbose_name="Имя пользователя"
-    )
-
-    email = models.EmailField(
-        unique=True,
-        verbose_name="Электронная почта"
-    )
+    def validate_phone_number(value):
+        pattern = r'^\+996\d{9}$'
+        if not re.match(pattern, value):
+            raise ValidationError("Номер телефона должен быть в формате +996XXXXXXXXX")
 
     phone_number = models.CharField(
         max_length=13,
         unique=True,
         help_text="Формат: +996XXXXXXXXX",
-        verbose_name="Номер телефона"
+        verbose_name="Номер телефона",
+        validators=[validate_phone_number]
     )
 
     created_at = models.DateTimeField(
