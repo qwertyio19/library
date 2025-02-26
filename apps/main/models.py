@@ -3,7 +3,7 @@ from django.db import models
 import re
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
-
+from django.conf import settings
 
 class User(AbstractUser):
 
@@ -66,6 +66,11 @@ class Todo(models.Model):
         null=True,
         blank=True,
         verbose_name="Изображение"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
